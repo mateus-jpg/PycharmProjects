@@ -2,7 +2,7 @@ import csv
 import tkinter as tk
 import pandas as pd
 from datetime import date
-from escpos.printer import Usb
+from escpos.printer import Dummy
 class App:
     def __init__(self, master):
         self.master = master
@@ -116,7 +116,7 @@ class App:
 
     def print_order(self):
         self.order_number += 1
-        with Usb(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
+        with Dummy(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
             p.text("Order:\n")
             for item, price in self.order:
                 p.text(f"{item} - ${price}\n")
