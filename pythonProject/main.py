@@ -1,6 +1,8 @@
+import csv
 import tkinter as tk
 import pandas as pd
 from datetime import date
+from escpos.printer import Usb
 class App:
     def __init__(self, master):
         self.master = master
@@ -76,6 +78,7 @@ class App:
                 }
             }
         self.order = []
+        self.order_number = 0
         self.today = date.today().strftime("%Y-%m-%d")
         self.df = pd.DataFrame(columns=["Order", "Price", "Category", "Date"])
         self.create_widgets()
@@ -112,7 +115,13 @@ class App:
 
 
     def print_order(self):
-        print(f"Order length: {len(self.order)}")
+        self.order_number += 1
+        with Usb(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
+            p.text("Order:\n")
+            for item, price in self.order:
+                p.text(f"{item} - ${price}\n")
+            total = sum(price for _, price in self.order)
+            p.text(f"Total: ${total}\n")
         data = []
         for item in self.order:
             name, price = item
@@ -121,13 +130,13 @@ class App:
                 if name in self.menu[c].keys():
                     category = c
                     break
-            data.append({"Order": name, "Price": price, "Category": category, "Date": self.today})
-        print(f"Data length: {len(data)}")
-        df = pd.DataFrame(data=data, columns=["Order", "Price", "Category", "Date"])
-        self.df = pd.concat([self.df, df], ignore_index=True)
-        self.df.to_excel(f"{self.today}_order.xlsx", index=False, mode="a", header=None)
+            data.append({"Order": name, "Price": price, "Category": category, "OrderNumber": self.order_number, "Date": self.today})
+        with open(f"{self.today}_order.csv", "a", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["Order", "Price", "Category", "OrderNumber", "Date"])
+            if f.tell() == 0:
+                writer.writeheader()
+            writer.writerows(data)
         self.order = []
-        self.df = pd.DataFrame(columns=["Order", "Price", "Category", "Date"])
 
 root = tk.Tk()
 app = App(root)
