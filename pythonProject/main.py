@@ -85,21 +85,25 @@ class App:
         self.category_buttons = []
         column = 0
         for category, subcategories in self.menu.items():
-            self.category_labels.append(tk.Label(self.master, text=category, fg="white"))
-            self.category_labels[-1].grid(row=0, column=column, padx=10, pady=10, sticky="w")
+            self.category_labels.append(tk.Label(self.master, text=category, fg="black"))
+            self.category_labels[-1].grid(row=0, column=column+1, padx=10, pady=10, sticky="w")
             row = 1
+            button_column = column
             for subcategory, items in subcategories.items():
-                self.category_labels.append(tk.Label(self.master, text=subcategory, fg="white"))
-                self.category_labels[-1].grid(row=row, column=column, padx=10, pady=10, sticky="w")
+                self.category_labels.append(tk.Label(self.master, text=subcategory, fg="black"))
+                self.category_labels[-1].grid(row=row, column=column+1, padx=10, pady=10, sticky="w")
                 row += 1
                 for i, (item, price) in enumerate(items.items()):
-                    self.category_buttons.append(tk.Button(self.master, text=f"{item} - ${price}",
+                    self.category_buttons.append(tk.Button(self.master, text=f"{item} \n ${price}",
                                                             command=lambda item=item, price=price: self.add_to_order(item, price)))
-                    self.category_buttons[-1].grid(row=row, column=column, padx=10, pady=10)
+                    self.category_buttons[-1].grid(row=row, column=button_column, padx=10, pady=10)
+                    button_column += 1
                     if i % 3 == 2:
+                        button_column = column
                         row += 1
+                button_column = column
                 row += 1
-            column += 1
+            column += 3
         self.print_order_button = tk.Button(self.master, text="Print Order", command=self.print_order)
         self.print_order_button.grid(row=row, column=0, columnspan=column, padx=10, pady=10)
 
