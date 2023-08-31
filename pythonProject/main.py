@@ -94,7 +94,7 @@ class App:
                 self.category_labels[-1].grid(row=row, column=column+1, padx=10, pady=10, sticky="w")
                 row += 1
                 for i, (item, price) in enumerate(items.items()):
-                    self.category_buttons.append(tk.Button(self.master, text=f"{item} \n ${price}",
+                    self.category_buttons.append(tk.Button(self.master, text=f"{item}",
                                                             command=lambda item=item, price=price: self.add_to_order(item, price)))
                     self.category_buttons[-1].grid(row=row, column=button_column, padx=10, pady=10)
                     button_column += 1
