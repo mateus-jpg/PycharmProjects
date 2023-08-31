@@ -80,41 +80,47 @@ class App:
         self.df = pd.DataFrame(columns=["Order", "Price", "Category", "Date"])
         self.create_widgets()
 
-def create_widgets(self):
+    def create_widgets(self):
         self.category_labels = []
         self.category_buttons = []
+        column = 0
         self.text_area = scrolledtext.ScrolledText(self.master, width=50, height=30)
         self.text_area.grid(row=0, column=0, padx=10, pady=10)
         for category, subcategories in self.menu.items():
             self.category_labels.append(tk.Label(self.master, text=category, fg="black"))
-            self.category_labels[-1].grid(row=0, column=len(self.category_labels), padx=10, pady=10, sticky="w")
+            self.category_labels[-1].grid(row=0, column=column+1, padx=10, pady=10, sticky="w")
             row = 1
-            button_column = len(self.category_labels) - 1
+            button_column = column
             for subcategory, items in subcategories.items():
                 self.category_labels.append(tk.Label(self.master, text=subcategory, fg="black"))
-                self.category_labels[-1].grid(row=row, column=len(self.category_labels), padx=10, pady=10, sticky="w")
+                self.category_labels[-1].grid(row=row, column=column+1, padx=10, pady=10, sticky="w")
                 row += 1
                 for i, (item, price) in enumerate(items.items()):
-                    self.category_buttons.append(tk.Button(self.master, text=f"{item} - ${price}",
+                    self.category_buttons.append(tk.Button(self.master, text=f"{item}",
                                                             command=lambda item=item, price=price: self.add_to_order(item, price)))
                     self.category_buttons[-1].grid(row=row, column=button_column, padx=10, pady=10)
                     button_column += 1
                     if i % 3 == 2:
-                        button_column = len(self.category_labels) - 1
+                        button_column = column
                         row += 1
-                button_column = len(self.category_labels) - 1
+                button_column = column
                 row += 1
+            column += 3
             self.order_listbox = Listbox(self.master, width=50, height=10)
             self.order_listbox.grid(row=0, column=len(self.category_labels), rowspan=row, padx=10, pady=10)
             self.total_label = tk.Label(self.master, text="Total: $0")
             self.total_label.grid(row=row, column=len(self.category_labels), padx=10, pady=10)
-            row += 1
         self.print_order_button = tk.Button(self.master, text="Print Order", command=self.print_order)
-        self.print_order_button.grid(row=row, column=0, columnspan=len(self.category_labels)+1, padx=10, pady=10)
-
+        self.print_order_button.grid(row=row, column=0, columnspan=column, padx=10, pady=10)
 
     def add_to_order(self, name, price):
         self.order.append((name, price))
+        self.order.append((item, price))
+        self.order_listbox.insert(tk.END, f"{item} - ${price}")
+        total = sum(price for _, price in self.order)
+        self.total_label.config(text=f"Total: ${total}")
+        self.text_area.insert(tk.END, f"{item} added to order (${price})\n")
+
 
 
     def print_order(self):
@@ -134,6 +140,9 @@ def create_widgets(self):
         self.df.to_excel(f"{self.today}_order.xlsx", index=False, mode="a", header=None)
         self.order = []
         self.df = pd.DataFrame(columns=["Order", "Price", "Category", "Date"])
+        self.order_listbox.delete(0, tk.END)
+        self.total_label.config(text="Total: $0")
+
 
 root = tk.Tk()
 app = App(root)
