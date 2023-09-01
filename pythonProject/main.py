@@ -28,17 +28,22 @@ class App:
 
 ################ Menu Santa Maria #############################
              "Santa Maria": {
-                "Burger": {
-                    "Cheeseburger": 9, 
-                    "Bacon Burger": 11, 
-                    "Veggie Burger": 8
-                    },
-                "Fries": {
-                    "Regular": 4, 
-                    "Curly": 5, 
-                    "Sweet Potato": 6
-                    }
+
+                "SPINA": {
+                    # SANTA MARIA 5 MOMPRACEM 5 WOTTGENSTEIN 5 GEROGE BEST 5
+                    "Santa Maria": 5,
+                    "Mompracem": 5,
+                    "Wottgenstein": 5,
+                    "George Best": 5
                 },
+                 "LATTINA": {
+                     # SANTA MARIA 6 SAGE 'EM ALL 6 GESSLER 6
+                        "Santa Maria": 6,
+                        "Sage 'em all": 6,
+                        "Gessler": 6,
+                        "Session IPA": 6,
+                }
+             },
 
  ################ Menu preti #############################    
              "Preti": {
@@ -98,13 +103,14 @@ class App:
                 self.category_labels[-1].grid(row=row, column=column+1, padx=10, pady=10, sticky="w")
                 row += 1
                 for i, (item, price) in enumerate(items.items()):
-                    self.category_buttons.append(tk.Button(self.master, text=f"{item}",
+                    if i % 3 == 0 and i != 0:
+                        button_column = column
+                        row += 1
+                    self.category_buttons.append(tk.Button(self.master, text=f"{item.center(20)}",
                                                             command=lambda item=item, price=price: self.add_to_order(item, price, category)))
                     self.category_buttons[-1].grid(row=row, column=button_column, padx=10, pady=10)
                     button_column += 1
-                    if i % 3 == 2:
-                        button_column = column
-                        row += 1
+
                 button_column = column
                 row += 1
             column += 3
