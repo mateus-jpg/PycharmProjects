@@ -168,7 +168,7 @@ class App:
                 if name in self.menu[c].keys():
                     category = c
                     break
-            data.append({"Order": name, "Price": price, "Category": category, "OrderNumber": self.order_number, "Date": self.today})
+            data.append({"Order": name, "Price": price, "Category": category, "OrderNumber": self.order_number, "Date": date.now().strftime("%Y-%m-%d %H:%M:%S")})
         with open(f"{self.today}_order.csv", "a", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=["Order", "Price", "Category", "OrderNumber", "Date"])
             if f.tell() == 0:
