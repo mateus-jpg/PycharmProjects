@@ -147,12 +147,20 @@ class App:
             self.total_label.config(text=f"Total: ${self.total}")
     def print_order(self):
         self.order_number += 1
-       # with Usb(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
-       #     p.text("Order:\n")
-       #     for item, price,  in self.order:
-       #         p.text(f"{item} - ${price}\n")
-       #     total = sum(price for _, price in self.order)
-       #     p.text(f"Total: ${total}\n")
+        with Usb(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
+            for category, subcategories in self.menu.items():
+                items_in_order = [name for name, _, _ in self.order if name in subcategories]
+                if items_in_order:
+                    p.text(f"----- {category} -----\n")
+                    for item in items_in_order:
+                        price = subcategories[item]
+                        count = sum(1 for name, _, _ in self.order if name == item)
+                        p.text(f"{item} x{count} - ${price * count:.2f}\n")
+                    p.text("\n")
+            total = sum(price for _, price, _ in self.order)
+            p.text("Scontrino non fiscale")
+            p.text("\n")
+            p.text(f"Grazie! Stai sostentando la nostra raccolta fondi per Bajed Andala\n")
         data = []
         for item in self.order:
             name, price, category = item
