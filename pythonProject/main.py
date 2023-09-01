@@ -162,6 +162,8 @@ class App:
             writer.writerows(data)
         self.order = []
         self.total = 0
+        self.order_text.delete("1.0", tk.END)
+        self.total_label.config(text=f"Total: ${self.total}")
 
 root = tk.Tk()
 app = App(root)
