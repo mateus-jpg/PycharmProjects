@@ -107,18 +107,27 @@ class App:
                 button_column = column
                 row += 1
             column += 3
-        self.print_order_button = tk.Button(self.master, text="Print Order", command=self.print_order)
-        self.print_order_button.grid(row=row, column=0, columnspan=column, padx=10, pady=10)
+        self.delete_order_button = tk.Button(self.master, text="Delete Order", command=self.delete_order, bg="red")
+        self.delete_order_button.grid(row=row, column= 3, padx=10, pady=10)
+        self.delete_last_order_button = tk.Button(self.master, text="Delete Last Order", command=self.delete_last_order, bg="orange")
+        self.delete_last_order_button.grid(row=row, column=4, padx=10, pady=10)
+        self.print_order_button = tk.Button(self.master, text="Print Order", command=self.print_order, bg="green")
+        self.print_order_button.grid(row=row, column=5,  padx=10, pady=10)
 
-    def add_to_order(self, name, price):
-        self.order.append((name, price))
+    def add_to_order(self, name, price, category):
+        self.order.append(name, price, category)
 
+    def delete_order(): 
+        self.order = []
+
+    def delete_last_order():
+        self.order.pop()
 
     def print_order(self):
         self.order_number += 1
         with Dummy(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
             p.text("Order:\n")
-            for item, price in self.order:
+            for item, price,  in self.order:
                 p.text(f"{item} - ${price}\n")
             total = sum(price for _, price in self.order)
             p.text(f"Total: ${total}\n")
