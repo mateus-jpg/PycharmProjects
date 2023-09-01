@@ -107,6 +107,8 @@ class App:
                 button_column = column
                 row += 1
             column += 3
+        self.order_text = tk.Text(self.master, width=50, height=30)
+        self.order_text.grid(row=1, column=9, columnspan=3, padx=10, pady=10)
         self.delete_order_button = tk.Button(self.master, text="Delete Order", command=self.delete_order, bg="red")
         self.delete_order_button.grid(row=row, column= 3, padx=10, pady=10)
         self.delete_last_order_button = tk.Button(self.master, text="Delete Last Order", command=self.delete_last_order, bg="orange")
@@ -117,15 +119,15 @@ class App:
     def add_to_order(self, name, price, category):
         self.order.append(name, price, category)
 
-    def delete_order(): 
+    def delete_order(self): 
         self.order = []
 
-    def delete_last_order():
+    def delete_last_order(self):
         self.order.pop()
 
     def print_order(self):
         self.order_number += 1
-        with Dummy(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
+        with USB(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
             p.text("Order:\n")
             for item, price,  in self.order:
                 p.text(f"{item} - ${price}\n")
