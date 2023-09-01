@@ -2,12 +2,13 @@ import csv
 import tkinter as tk
 import pandas as pd
 from datetime import date
-from escpos.printer import Dummy
+from escpos.printer import Usb
 class App:
     def __init__(self, master):
         self.master = master
         self.master.title("Menu")
         self.master.geometry("400x400")
+        self.total = 0
         self.master.config(bg="white")  # set background color
         self.menu = {
 
@@ -98,7 +99,7 @@ class App:
                 row += 1
                 for i, (item, price) in enumerate(items.items()):
                     self.category_buttons.append(tk.Button(self.master, text=f"{item}",
-                                                            command=lambda item=item, price=price: self.add_to_order(item, price)))
+                                                            command=lambda item=item, price=price: self.add_to_order(item, price, category)))
                     self.category_buttons[-1].grid(row=row, column=button_column, padx=10, pady=10)
                     button_column += 1
                     if i % 3 == 2:
@@ -108,7 +109,9 @@ class App:
                 row += 1
             column += 3
         self.order_text = tk.Text(self.master, width=50, height=30)
-        self.order_text.grid(row=1, column=9, columnspan=3, padx=10, pady=10)
+        self.order_text.grid(row=1, column=9, columnspan=3, rowspan=10, padx=10, pady=10)
+        self.total_label = tk.Label(self.master, text="Total: 0€", fg="black")
+        self.total_label.grid(row=14, column=9, columnspan=3, padx=10, pady=10)
         self.delete_order_button = tk.Button(self.master, text="Delete Order", command=self.delete_order, bg="red")
         self.delete_order_button.grid(row=row, column= 3, padx=10, pady=10)
         self.delete_last_order_button = tk.Button(self.master, text="Delete Last Order", command=self.delete_last_order, bg="orange")
@@ -117,26 +120,36 @@ class App:
         self.print_order_button.grid(row=row, column=5,  padx=10, pady=10)
 
     def add_to_order(self, name, price, category):
-        self.order.append(name, price, category)
+        self.order.append([name, price, category])
+        self.order_text.insert(tk.END, f"{name} - ${price}\n")
+        self.total += price
+        self.total_label.config(text=f"Total: ${self.total}")
 
     def delete_order(self): 
         self.order = []
+        self.order_text.delete("1.0", tk.END)
+        self.total = 0
+        self.total_label.config(text=f"Total: ${self.total}")
 
     def delete_last_order(self):
-        self.order.pop()
-
+        if self.order:
+            self.order.pop()
+            self.order_text.delete("1.0", tk.END)
+            for item, price, _ in self.order:
+                self.order_text.insert(tk.END, f"{item} - ${price}\n")
+            self.total -= price
+            self.total_label.config(text=f"Total: ${self.total}")
     def print_order(self):
         self.order_number += 1
-        with USB(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
-            p.text("Order:\n")
-            for item, price,  in self.order:
-                p.text(f"{item} - ${price}\n")
-            total = sum(price for _, price in self.order)
-            p.text(f"Total: ${total}\n")
+       # with Usb(0x0416, 0x5011) as p:  # replace with your printer's vendor and product IDs
+       #     p.text("Order:\n")
+       #     for item, price,  in self.order:
+       #         p.text(f"{item} - ${price}\n")
+       #     total = sum(price for _, price in self.order)
+       #     p.text(f"Total: ${total}\n")
         data = []
         for item in self.order:
-            name, price = item
-            category = ""
+            name, price, category = item
             for c in self.menu.keys():
                 if name in self.menu[c].keys():
                     category = c
@@ -148,6 +161,7 @@ class App:
                 writer.writeheader()
             writer.writerows(data)
         self.order = []
+        self.total = 0
 
 root = tk.Tk()
 app = App(root)
