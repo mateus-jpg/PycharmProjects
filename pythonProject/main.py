@@ -160,7 +160,8 @@ class App:
         total = sum(price for _, price, _ in self.order)
         self.p.text("Scontrino non fiscale")
         self.p.text("\n")
-        self.p.text(f"Grazie! Stai sostentando la nostra raccolta \n fondi per Bajed Andala\n")
+        self.p.image("logo.jpg")
+        self.p.text(f"Grazie! Stai sostentando la nostra raccolta \nfondi per Bajed Kandal")
         self.p.cut()
         data = []
         for item in self.order:
