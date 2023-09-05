@@ -32,17 +32,17 @@ class App:
 
                 "SPINA": {
                     # SANTA MARIA 5 MOMPRACEM 5 WOTTGENSTEIN 5 GEROGE BEST 5
-                    "Santa Maria": 5,
-                    "Mompracem": 5,
-                    "Wottgenstein": 5,
-                    "George Best": 5
+                    "Santa Maria SPINA": 5,
+                    "Mompracem SPINA": 5,
+                    "Wottgenstein SPINA": 5,
+                    "George Best SPINA": 5
                 },
                  "LATTINA": {
                      # SANTA MARIA 6 SAGE 'EM ALL 6 GESSLER 6
-                        "Santa Maria": 6,
-                        "Sage 'em all": 6,
-                        "Gessler": 6,
-                        "Session IPA": 6,
+                        "Santa Maria LATTINA": 6,
+                        "Sage 'em all LATTINA": 6,
+                        "Gessler LATTINA": 6,
+                        "Session IPA LATTINA": 6,
                 }
              },
 
@@ -108,7 +108,7 @@ class App:
                         button_column = column
                         row += 1
                     self.category_buttons.append(tk.Button(self.master, text=f"{item.center(20)}",
-                                                            command=lambda item=item, price=price: self.add_to_order(item, price, category)))
+                                                            command=lambda item=item, price=price, category = category: self.add_to_order(item, price, category)))
                     self.category_buttons[-1].grid(row=row, column=button_column, padx=10, pady=10)
                     button_column += 1
 
@@ -149,11 +149,11 @@ class App:
     def print_order(self):
         self.order_number += 1
         for category, subcategories in self.menu.items():
-            items_in_order = [name for name, _, _ in self.order if name in subcategories]
+            items_in_order = [(name, price) for name, price, category_item in self.order if category_item in category]
             if items_in_order:
                 self.p.text(f"----- {category} -----\n")
-                for item in items_in_order:
-                    price = subcategories[item]
+                for item, price in items_in_order:
+
                     count = sum(1 for name, _, _ in self.order if name == item)
                     self.p.text(f"{item} x{count} - ${price * count:.2f}\n")
                 self.p.text("\n")
